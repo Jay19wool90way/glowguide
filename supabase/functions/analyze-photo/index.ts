@@ -7,7 +7,7 @@ const supabase = createClient(
 );
 
 const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-const openaiModel = Deno.env.get('OPENAI_MODEL') || 'gpt-4o'; // Default to gpt-4o if not specified
+const openaiModel = Deno.env.get('OPENAI_MODEL') || 'gpt-5'; // Default to gpt-5 if not specified
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -193,8 +193,25 @@ Deno.serve(async (req) => {
       console.error('OpenAI API error status:', openaiResponse.status);
       console.error('OpenAI API error response:', errorText);
       console.error('OpenAI API error headers:', Object.fromEntries(openaiResponse.headers.entries()));
+      
+      // Try to parse error response for more details
+      try {
+        const errorData = JSON.parse(errorText);
+        console.error('Parsed OpenAI error data:', JSON.stringify(errorData, null, 2));
+        if (errorData.error) {
+          console.error('OpenAI error type:', errorData.error.type);
+          console.error('OpenAI error code:', errorData.error.code);
+          console.error('OpenAI error message:', errorData.error.message);
+        }
+      } catch (parseError) {
+        console.error('Could not parse OpenAI error response as JSON');
+      }
+      
       return new Response(
-        JSON.stringify({ error: 'Failed to analyze image' }),
+        JSON.stringify({ 
+          error: 'Failed to analyze image', 
+          details: `OpenAI API returned ${openaiResponse.status}: ${errorText}` 
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
