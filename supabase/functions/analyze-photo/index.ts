@@ -166,11 +166,7 @@ Deno.serve(async (req) => {
                 }
                 
                 Focus on wellness insights, not medical diagnosis. Be encouraging and specific about improvements. Respond ONLY with valid JSON format, no explanations or additional text.`
-                text: `Describe the photo in detail, focusing on observable features like colors, objects, expressions, and context.
-Then, roleplay as a general wellness coach who gives non-medical, non-diagnostic suggestions for lifestyle improvements that anyone could try (e.g., hydration, sleep, relaxation, exercise, creativity).
-Do not make claims about age, health conditions, deficiencies, intolerances, or personality traits based on appearance. Instead, use the description as inspiration for broadly applicable advice.
-
-Provide a JSON response with the following structure:
+                text: `Based on this image, provide wellness lifestyle insights and recommendations. Focus on general wellness guidance rather than facial analysis. Provide a JSON response with the following structure:
 {
   "perceived_age": number,
   "confidence": number (0-1),
@@ -244,7 +240,7 @@ Provide a JSON response with the following structure:
   ]
 }
 
-Respond ONLY with valid JSON format, no explanations or additional text.`
+Focus on wellness insights, not medical diagnosis. Be encouraging and specific about improvements. Respond ONLY with valid JSON format, no explanations or additional text.`
               },
               {
                 type: 'image_url',
