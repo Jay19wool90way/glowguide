@@ -166,6 +166,85 @@ Deno.serve(async (req) => {
                 }
                 
                 Focus on wellness insights, not medical diagnosis. Be encouraging and specific about improvements. Respond ONLY with valid JSON format, no explanations or additional text.`
+                text: `Describe the photo in detail, focusing on observable features like colors, objects, expressions, and context.
+Then, roleplay as a general wellness coach who gives non-medical, non-diagnostic suggestions for lifestyle improvements that anyone could try (e.g., hydration, sleep, relaxation, exercise, creativity).
+Do not make claims about age, health conditions, deficiencies, intolerances, or personality traits based on appearance. Instead, use the description as inspiration for broadly applicable advice.
+
+Provide a JSON response with the following structure:
+{
+  "perceived_age": number,
+  "confidence": number (0-1),
+  "preview_insights": [
+    {
+      "star_rating": number (1-5),
+      "emotional_hook": "string",
+      "conversion_tease": "string",
+      "category": "string"
+    }
+  ],
+  "detailed_analysis": {
+    "wellness_age": {
+      "perceived_age": number,
+      "confidence": number,
+      "detailed_observations": ["string"],
+      "root_causes": ["string"],
+      "improvement_timeline": "string"
+    },
+    "facial_features": {
+      "skin_analysis": {
+        "observation": "string",
+        "potential_causes": ["string"],
+        "root_connection": "string",
+        "protocol": "string",
+        "timeline": "string"
+      },
+      "eye_area": {
+        "observation": "string",
+        "potential_causes": ["string"],
+        "root_connection": "string",
+        "protocol": "string",
+        "timeline": "string"
+      },
+      "lip_analysis": {
+        "observation": "string",
+        "potential_causes": ["string"],
+        "root_connection": "string",
+        "protocol": "string",
+        "timeline": "string"
+      },
+      "jaw_tension": {
+        "observation": "string",
+        "potential_causes": ["string"],
+        "root_connection": "string",
+        "protocol": "string",
+        "timeline": "string"
+      }
+    }
+  },
+  "daily_rituals": [
+    {
+      "category": "string",
+      "rituals": [
+        {
+          "title": "string",
+          "description": "string"
+        }
+      ]
+    }
+  ],
+  "product_recommendations": [
+    {
+      "name": "string",
+      "dosage": "string",
+      "reason": "string",
+      "expected_result": "string",
+      "price_band": "string",
+      "timeline": "string"
+    }
+  ]
+}
+
+Respond ONLY with valid JSON format, no explanations or additional text.`
               },
               {
                 type: 'image_url',
