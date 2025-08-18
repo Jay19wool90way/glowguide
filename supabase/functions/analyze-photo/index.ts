@@ -7,7 +7,7 @@ const supabase = createClient(
 );
 
 const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-const openaiModel = Deno.env.get('OPENAI_MODEL') || 'gpt-4o'; // Default to gpt-4o if not specified
+const openaiModel = 'gpt-4o'; // Use gpt-4o for reliable content generation
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -77,7 +77,7 @@ Deno.serve(async (req) => {
 
     // Call OpenAI GPT-4 Vision API directly with base64 image
     console.log('Making request to OpenAI API...');
-    console.log('OpenAI API URL: https://api.openai.com/v1/chat/completions');
+    console.log('GPT-4o API URL: https://api.openai.com/v1/chat/completions');
     console.log('Using OpenAI model:', openaiModel);
     
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
