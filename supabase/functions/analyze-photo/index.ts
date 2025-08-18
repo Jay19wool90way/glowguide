@@ -7,7 +7,6 @@ const supabase = createClient(
 );
 
 const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-const openaiModel = 'gpt-4o'; // Use gpt-4o for reliable content generation
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -45,7 +44,6 @@ Deno.serve(async (req) => {
     console.log('OpenAI API key exists:', !!openaiApiKey);
     console.log('OpenAI API key length:', openaiApiKey ? openaiApiKey.length : 0);
     console.log('OpenAI API key starts with sk-:', openaiApiKey ? openaiApiKey.startsWith('sk-') : false);
-    console.log('OpenAI model configured:', openaiModel);
     
     if (!openaiApiKey) {
       console.error('OpenAI API key not found in environment variables');
@@ -75,10 +73,9 @@ Deno.serve(async (req) => {
     const tempAnalysisId = generateTempId();
     console.log('Generated temp analysis ID:', tempAnalysisId);
 
-    // Call OpenAI GPT-4 Vision API directly with base64 image
+    // Call OpenAI GPT-4o Vision API directly with base64 image
     console.log('Making request to OpenAI API...');
-    console.log('GPT-4o API URL: https://api.openai.com/v1/chat/completions');
-    console.log('Using OpenAI model:', openaiModel);
+    console.log('Using OpenAI model: gpt-4o');
     
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -87,7 +84,7 @@ Deno.serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: openaiModel,
+        model: "gpt-4o",
         messages: [
           {
             role: 'user',
@@ -180,7 +177,7 @@ Deno.serve(async (req) => {
           }
         ],
         max_completion_tokens: 2000,
-        temperature: 1
+        temperature: 0.7
       })
     });
 
