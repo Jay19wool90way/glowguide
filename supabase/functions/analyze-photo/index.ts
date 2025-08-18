@@ -91,7 +91,7 @@ Deno.serve(async (req) => {
             content: [
               {
                 type: 'text',
-                text: `Analyze this person's face for wellness insights. Provide a JSON response with the following structure:
+              text: `Based on this image, provide wellness lifestyle insights and recommendations. Focus on general wellness guidance rather than facial analysis. Provide a JSON response with the following structure:
                 {
                   "perceived_age": number,
                   "confidence": number (0-1),
@@ -165,7 +165,7 @@ Deno.serve(async (req) => {
                   ]
                 }
                 
-                Focus on wellness insights, not medical diagnosis. Be encouraging and specific about improvements.`
+                Focus on wellness insights, not medical diagnosis. Be encouraging and specific about improvements. Respond ONLY with valid JSON format, no explanations or additional text.`
               },
               {
                 type: 'image_url',
@@ -176,8 +176,8 @@ Deno.serve(async (req) => {
             ]
           }
         ],
-        max_completion_tokens: 2000,
-        temperature: 0.7
+        max_completion_tokens: 2000, // Set max_completion_tokens
+        temperature: 0.7 // Set temperature
       })
     });
 
