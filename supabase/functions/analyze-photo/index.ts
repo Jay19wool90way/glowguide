@@ -7,7 +7,7 @@ const supabase = createClient(
 );
 
 const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
-const openaiModel = Deno.env.get('OPENAI_MODEL') || 'gpt-5'; // Default to gpt-5 if not specified
+const openaiModel = Deno.env.get('OPENAI_MODEL') || 'gpt-4o'; // Default to gpt-4o if not specified
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
