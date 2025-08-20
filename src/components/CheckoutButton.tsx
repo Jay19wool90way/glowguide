@@ -26,6 +26,12 @@ export function CheckoutButton({ product, className = '', children }: CheckoutBu
         return;
       }
 
+      if (!session) {
+        setMessage({ type: 'error', text: 'Please sign in to continue' });
+        setLoading(false);
+        return;
+      }
+
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-checkout`, {
         method: 'POST',
         headers: {

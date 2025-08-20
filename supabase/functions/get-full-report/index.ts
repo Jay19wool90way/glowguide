@@ -49,7 +49,6 @@ Deno.serve(async (req) => {
     const { data: subscription, error: subError } = await supabase
       .from('stripe_user_subscriptions')
       .select('subscription_status')
-      .eq('customer_id', user.id)
       .maybeSingle();
 
     if (subError) {

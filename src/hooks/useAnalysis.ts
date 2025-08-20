@@ -87,6 +87,12 @@ export function useAnalysis() {
         throw new Error('Authentication required');
       }
 
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('Authentication required');
+      }
+
       // Get temp analysis data from sessionStorage
       const tempAnalysis = getTempAnalysis();
       if (!tempAnalysis) {
@@ -96,6 +102,7 @@ export function useAnalysis() {
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/save-analysis-post-payment`, {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${session.access_token}`,
           'Authorization': `Bearer ${session.access_token}`,
           'Content-Type': 'application/json',
         },
@@ -138,6 +145,12 @@ export function useAnalysis() {
         throw new Error('Authentication required');
       }
 
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('Authentication required');
+      }
+
       // Use provided analysisId or get from sessionStorage
       const targetAnalysisId = analysisId || sessionStorage.getItem(REAL_ANALYSIS_ID_KEY);
       
@@ -148,6 +161,7 @@ export function useAnalysis() {
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-full-report/${targetAnalysisId}`, {
         method: 'GET',
         headers: {
+          'Authorization': `Bearer ${session.access_token}`,
           'Authorization': `Bearer ${session.access_token}`,
           'Content-Type': 'application/json',
         },
