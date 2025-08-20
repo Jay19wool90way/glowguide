@@ -1,7 +1,5 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
-const googleApiKey = Deno.env.get('GOOGLE_VISION_API_KEY') || 'AIzaSyB5O-KiDzFSeZP9jvpemQZUhRwla9lagLQ';
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -165,6 +163,17 @@ Deno.serve(async (req) => {
     console.log('=== ANALYZE PHOTO FUNCTION START ===');
     console.log('Request method:', req.method);
 
+    // Check for Google Vision API key
+    const googleApiKey = Deno.env.get('GOOGLE_VISION_API_KEY');
+    if (!googleApiKey) {
+      console.error('GOOGLE_VISION_API_KEY environment variable is not set');
+      return new Response(
+        JSON.stringify({ error: 'Google Vision API key not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    console.log('Google Vision API key found');
+
     // Handle CORS preflight requests
     if (req.method === 'OPTIONS') {
       console.log('Handling CORS preflight request');
@@ -208,7 +217,7 @@ Deno.serve(async (req) => {
 
     // Call Google Vision API for face detection
     console.log('Making request to Google Vision API...');
-    console.log('Using API key:', googleApiKey ? 'API key present' : 'No API key');
+    console.log('Using API key from environment variable');
     
     const visionResponse = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${googleApiKey}`, {
       method: 'POST',
