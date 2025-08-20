@@ -97,7 +97,6 @@ export function useAnalysis() {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
-          'Authorization': `Bearer ${session.access_token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -149,7 +148,6 @@ export function useAnalysis() {
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-full-report/${targetAnalysisId}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`,
           'Authorization': `Bearer ${session.access_token}`,
           'Content-Type': 'application/json',
         },
