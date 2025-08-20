@@ -507,53 +507,30 @@ function App() {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-teal-500" />
-              Wellness Age Analysis
+              Visual Age Analysis
             </h3>
             <button
-              onClick={() => toggleSection('wellness-age')}
+              onClick={() => toggleSection('visual-age')}
               className="text-gray-500 hover:text-gray-700"
             >
-              {expandedSections['wellness-age'] ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+              {expandedSections['visual-age'] ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
             </button>
           </div>
           
           {fullReportData?.analysis_data && (
             <>
               <div className="flex items-center gap-4 mb-4">
-                <div className="text-3xl font-bold text-teal-600">{fullReportData.analysis_data.detailed_analysis.wellness_age.perceived_age} years</div>
+                <div className="text-3xl font-bold text-teal-600">{fullReportData.analysis_data.perceived_age} years</div>
                 <div className="text-sm text-gray-600">
-                  Confidence: {Math.round(fullReportData.analysis_data.detailed_analysis.wellness_age.confidence * 100)}%
+                  Confidence: {Math.round(fullReportData.analysis_data.confidence * 100)}%
                 </div>
               </div>
 
-              {expandedSections['wellness-age'] && (
+              {expandedSections['visual-age'] && (
                 <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium text-gray-800 mb-2">Detailed Observations:</h4>
-                    <ul className="space-y-1">
-                      {fullReportData.analysis_data.detailed_analysis.wellness_age.detailed_observations.map((obs: string, idx: number) => (
-                        <li key={idx} className="text-gray-600 text-sm flex items-start gap-2">
-                          <CheckCircle className="w-4 h-4 text-teal-500 flex-shrink-0 mt-0.5" />
-                          {obs}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-medium text-gray-800 mb-2">Root Causes:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {fullReportData.analysis_data.detailed_analysis.wellness_age.root_causes.map((cause: string, idx: number) => (
-                        <span key={idx} className="bg-teal-50 text-teal-700 px-3 py-1 rounded-full text-sm">
-                          {cause}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
                   <div className="bg-teal-50 rounded-xl p-4">
-                    <h4 className="font-medium text-teal-800 mb-2">Improvement Timeline:</h4>
-                    <p className="text-teal-700 text-sm">{fullReportData.analysis_data.detailed_analysis.wellness_age.improvement_timeline}</p>
+                    <h4 className="font-medium text-teal-800 mb-2">Analysis:</h4>
+                    <p className="text-teal-700 text-sm">{fullReportData.analysis_data.visual_age_analysis}</p>
                   </div>
                 </div>
               )}
@@ -561,60 +538,280 @@ function App() {
           )}
         </div>
 
-        {/* Detailed Facial Features Analysis */}
+        {/* Deficiencies Analysis */}
         <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100 mb-8">
           <h3 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
             <Eye className="w-5 h-5 text-pink-400" />
-            Comprehensive Facial Analysis
+            Deficiencies & Facial Analysis
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {fullReportData?.analysis_data?.detailed_analysis?.facial_features && Object.entries(fullReportData.analysis_data.detailed_analysis.facial_features).map(([key, feature]: [string, any]) => (
+            {fullReportData?.analysis_data?.deficiencies && Object.entries(fullReportData.analysis_data.deficiencies).filter(([key]) => key !== 'nutrient_flags').map(([key, observation]: [string, any]) => (
               <div key={key} className="border border-gray-100 rounded-xl p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-medium text-gray-800 capitalize">
-                    {key.replace('_', ' ')}
-                  </h4>
-                  <button
-                    onClick={() => toggleSection(key)}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    {expandedSections[key] ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  </button>
-                </div>
-                
-                <p className="text-gray-600 text-sm mb-3">{feature.observation}</p>
-                
-                {expandedSections[key] && (
-                  <div className="space-y-3">
-                    <div>
-                      <h5 className="text-xs font-medium text-gray-700 mb-1">Potential Causes:</h5>
-                      <ul className="space-y-1">
-                        {feature.potential_causes.map((cause: string, idx: number) => (
-                          <li key={idx} className="text-xs text-gray-600">• {cause}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div className="bg-pink-50 rounded-lg p-3">
-                      <h5 className="text-xs font-medium text-pink-800 mb-1">Root Connection:</h5>
-                      <p className="text-xs text-pink-700">{feature.root_connection}</p>
-                    </div>
-                    
-                    <div className="bg-green-50 rounded-lg p-3">
-                      <h5 className="text-xs font-medium text-green-800 mb-1">Protocol:</h5>
-                      <p className="text-xs text-green-700">{feature.protocol}</p>
-                    </div>
-                    
-                    <div className="bg-blue-50 rounded-lg p-3">
-                      <h5 className="text-xs font-medium text-blue-800 mb-1">Expected Timeline:</h5>
-                      <p className="text-xs text-blue-700">{feature.timeline}</p>
-                    </div>
-                  </div>
-                )}
+                <h4 className="font-medium text-gray-800 capitalize mb-3">
+                  {key.replace('_', ' ')}
+                </h4>
+                <p className="text-gray-600 text-sm">{observation}</p>
               </div>
             ))}
           </div>
+          
+          {fullReportData?.analysis_data?.deficiencies?.nutrient_flags && (
+            <div className="mt-6">
+              <h4 className="font-medium text-gray-800 mb-3">Potential Nutrient Flags:</h4>
+              <div className="flex flex-wrap gap-2">
+                {fullReportData.analysis_data.deficiencies.nutrient_flags.map((flag: string, idx: number) => (
+                  <span key={idx} className="bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm">
+                    {flag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Food Intolerances */}
+        <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100 mb-8">
+          <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <Activity className="w-5 h-5 text-orange-500" />
+            Food Intolerances & Reactions
+          </h3>
+          
+          {fullReportData?.analysis_data?.food_intolerances && (
+            <div className="space-y-4">
+              <div className={`p-4 rounded-xl ${
+                fullReportData.analysis_data.food_intolerances.signs_present 
+                  ? 'bg-orange-50 border border-orange-200' 
+                  : 'bg-green-50 border border-green-200'
+              }`}>
+                <p className={`font-medium ${
+                  fullReportData.analysis_data.food_intolerances.signs_present 
+                    ? 'text-orange-800' 
+                    : 'text-green-800'
+                }`}>
+                  {fullReportData.analysis_data.food_intolerances.signs_present 
+                    ? 'Potential food sensitivity signs detected' 
+                    : 'No obvious food sensitivity signs detected'
+                  }
+                </p>
+              </div>
+              
+              {fullReportData.analysis_data.food_intolerances.potential_triggers.length > 0 && (
+                <div>
+                  <h4 className="font-medium text-gray-800 mb-2">Potential Triggers to Test:</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {fullReportData.analysis_data.food_intolerances.potential_triggers.map((trigger: string, idx: number) => (
+                      <span key={idx} className="bg-orange-50 text-orange-700 px-3 py-1 rounded-full text-sm">
+                        {trigger}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              <div className="bg-blue-50 rounded-xl p-4">
+                <h4 className="font-medium text-blue-800 mb-2">Testing Recommendations:</h4>
+                <p className="text-blue-700 text-sm">{fullReportData.analysis_data.food_intolerances.recommendations}</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Psycho-Emotional States */}
+        <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100 mb-8">
+          <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <Heart className="w-5 h-5 text-purple-500" />
+            Psycho-Emotional Assessment
+          </h3>
+          
+          {fullReportData?.analysis_data?.psycho_emotional_states && (
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium text-gray-800 mb-2">Observed States:</h4>
+                <div className="flex flex-wrap gap-2">
+                  {fullReportData.analysis_data.psycho_emotional_states.observed_states.map((state: string, idx: number) => (
+                    <span key={idx} className="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm">
+                      {state}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="bg-purple-50 rounded-xl p-4">
+                <h4 className="font-medium text-purple-800 mb-2">Stress Indicators:</h4>
+                <p className="text-purple-700 text-sm">{fullReportData.analysis_data.psycho_emotional_states.stress_indicators}</p>
+              </div>
+              
+              <div className="bg-green-50 rounded-xl p-4">
+                <h4 className="font-medium text-green-800 mb-2">Energy Assessment:</h4>
+                <p className="text-green-700 text-sm">{fullReportData.analysis_data.psycho_emotional_states.energy_levels}</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Internal Conflicts & Personality */}
+        <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100 mb-8">
+          <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <User className="w-5 h-5 text-indigo-500" />
+            Personality & Internal Patterns
+          </h3>
+          
+          {fullReportData?.analysis_data?.internal_conflicts && (
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium text-gray-800 mb-2">Personality Traits:</h4>
+                <div className="flex flex-wrap gap-2">
+                  {fullReportData.analysis_data.internal_conflicts.personality_traits.map((trait: string, idx: number) => (
+                    <span key={idx} className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm">
+                      {trait}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              
+              {fullReportData.analysis_data.internal_conflicts.potential_conflicts.length > 0 && (
+                <div>
+                  <h4 className="font-medium text-gray-800 mb-2">Potential Internal Conflicts:</h4>
+                  <ul className="space-y-1">
+                    {fullReportData.analysis_data.internal_conflicts.potential_conflicts.map((conflict: string, idx: number) => (
+                      <li key={idx} className="text-gray-600 text-sm flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-indigo-500 flex-shrink-0 mt-0.5" />
+                        {conflict}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              <div className="bg-indigo-50 rounded-xl p-4">
+                <h4 className="font-medium text-indigo-800 mb-2">Behavioral Patterns:</h4>
+                <p className="text-indigo-700 text-sm">{fullReportData.analysis_data.internal_conflicts.behavioral_patterns}</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Comprehensive Recommendations */}
+        <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100 mb-8">
+          <h3 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+            <Zap className="w-5 h-5 text-green-500" />
+            Comprehensive Recommendations
+          </h3>
+          
+          {fullReportData?.analysis_data?.recommendations && (
+            <div className="space-y-6">
+              {/* Diet Recommendations */}
+              <div className="border-l-4 border-green-200 pl-6">
+                <h4 className="font-semibold text-gray-800 mb-4">Diet & Nutrition</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <h5 className="font-medium text-red-700 mb-2">Eliminate/Test:</h5>
+                    <ul className="space-y-1">
+                      {fullReportData.analysis_data.recommendations.diet.eliminate.map((item: string, idx: number) => (
+                        <li key={idx} className="text-sm text-gray-600">• {item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 className="font-medium text-green-700 mb-2">Add:</h5>
+                    <ul className="space-y-1">
+                      {fullReportData.analysis_data.recommendations.diet.add.map((item: string, idx: number) => (
+                        <li key={idx} className="text-sm text-gray-600">• {item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 className="font-medium text-blue-700 mb-2">Supplements:</h5>
+                    <ul className="space-y-1">
+                      {fullReportData.analysis_data.recommendations.diet.supplements.map((item: string, idx: number) => (
+                        <li key={idx} className="text-sm text-gray-600">• {item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Lifestyle Recommendations */}
+              <div className="border-l-4 border-blue-200 pl-6">
+                <h4 className="font-semibold text-gray-800 mb-4">Lifestyle Changes</h4>
+                <div className="space-y-3">
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-2">Daily Habits:</h5>
+                    <ul className="space-y-1">
+                      {fullReportData.analysis_data.recommendations.lifestyle.daily_habits.map((habit: string, idx: number) => (
+                        <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
+                          <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                          {habit}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="bg-blue-50 rounded-lg p-3">
+                    <h5 className="font-medium text-blue-800 mb-1">Exercise:</h5>
+                    <p className="text-blue-700 text-sm">{fullReportData.analysis_data.recommendations.lifestyle.exercise}</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Rest & Recovery */}
+              <div className="border-l-4 border-purple-200 pl-6">
+                <h4 className="font-semibold text-gray-800 mb-4">Rest & Recovery</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-2">Sleep Hygiene:</h5>
+                    <ul className="space-y-1">
+                      {fullReportData.analysis_data.recommendations.rest.sleep_hygiene.map((tip: string, idx: number) => (
+                        <li key={idx} className="text-sm text-gray-600">• {tip}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-2">Recovery Practices:</h5>
+                    <ul className="space-y-1">
+                      {fullReportData.analysis_data.recommendations.rest.recovery.map((practice: string, idx: number) => (
+                        <li key={idx} className="text-sm text-gray-600">• {practice}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Mindset & Mental Health */}
+              <div className="border-l-4 border-pink-200 pl-6">
+                <h4 className="font-semibold text-gray-800 mb-4">Mindset & Mental Health</h4>
+                <div className="space-y-3">
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-2">Mental Practices:</h5>
+                    <ul className="space-y-1">
+                      {fullReportData.analysis_data.recommendations.mindset.mental_practices.map((practice: string, idx: number) => (
+                        <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
+                          <Heart className="w-4 h-4 text-pink-500 flex-shrink-0 mt-0.5" />
+                          {practice}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-2">Emotional Work:</h5>
+                    <ul className="space-y-1">
+                      {fullReportData.analysis_data.recommendations.mindset.emotional_work.map((work: string, idx: number) => (
+                        <li key={idx} className="text-sm text-gray-600">• {work}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 className="font-medium text-gray-700 mb-2">Thinking Pattern Adjustments:</h5>
+                    <ul className="space-y-1">
+                      {fullReportData.analysis_data.recommendations.mindset.thinking_patterns.map((pattern: string, idx: number) => (
+                        <li key={idx} className="text-sm text-gray-600">• {pattern}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Enhanced Daily Rituals */}
@@ -644,31 +841,6 @@ function App() {
                     </div>
                   ))}
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Enhanced Weekly Focus */}
-        <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100 mb-8">
-          <h3 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-            <Timer className="w-5 h-5 text-teal-500" />
-            4-Phase Transformation Journey
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              { week: 1, phase: "Foundation Reset", focus: "Elimination diet + anti-inflammatory support based on facial indicators" },
-              { week: 2, phase: "Optimization & Testing", focus: "Food reintroduction with targeted lymphatic drainage techniques" },
-              { week: 3, phase: "Advanced Integration", focus: "Personalized refinements with stress management protocols" },
-              { week: 4, phase: "Mastery & Maintenance", focus: "Sustainable habit creation with progress celebration" }
-            ].map((item, idx) => (
-              <div key={idx} className="bg-gradient-to-r from-teal-50 to-pink-50 rounded-xl p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="text-teal-600 font-bold">Week {item.week}</div>
-                  <div className="text-gray-600 text-sm">•</div>
-                  <div className="text-pink-600 font-semibold text-sm">{item.phase}</div>
-                </div>
-                <div className="text-gray-700 text-sm">{item.focus}</div>
               </div>
             ))}
           </div>
@@ -719,8 +891,7 @@ function App() {
         <div className="bg-gradient-to-r from-teal-500 to-pink-400 rounded-3xl p-8 text-center text-white shadow-xl mb-8">
           <Heart className="w-8 h-8 mx-auto mb-4 opacity-80" />
           <p className="text-lg leading-relaxed">
-            {fullReportData?.analysis_data?.detailed_analysis?.wellness_age?.improvement_timeline || 
-             'Your personalized wellness blueprint combines targeted nutrition, stress management, and lifestyle optimization based on your unique facial analysis.'}
+            Your personalized wellness blueprint combines targeted nutrition, stress management, and lifestyle optimization based on your unique facial analysis.
           </p>
         </div>
 
