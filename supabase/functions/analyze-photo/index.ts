@@ -11,151 +11,194 @@ function generateTempId(): string {
   return 'temp_' + crypto.randomUUID();
 }
 
-// Generate wellness insights based on Google Vision API face detection results
-function generateWellnessInsights(faceAnnotations: any[]): any {
-  // Default insights if no faces detected or minimal data
-  const defaultInsights = {
-    perceived_age: 28,
-    confidence: 0.7,
-    preview_insights: [
-      {
-        star_rating: 4,
-        emotional_hook: "Your wellness journey starts with small, consistent steps that create lasting transformation.",
-        conversion_tease: "Discover personalized daily rituals that work with your lifestyle",
-        category: "wellness"
-      },
-      {
-        star_rating: 4,
-        emotional_hook: "Hydration and rest are the foundation of natural radiance and energy.",
-        conversion_tease: "Learn the optimal timing for hydration and sleep optimization",
-        category: "hydration"
-      },
-      {
-        star_rating: 3,
-        emotional_hook: "Stress management through mindful practices can transform how you feel daily.",
-        conversion_tease: "Get specific stress-relief techniques tailored to your routine",
-        category: "mindfulness"
-      }
-    ],
-    detailed_analysis: {
-      wellness_age: {
-        perceived_age: 28,
-        confidence: 0.7,
-        detailed_observations: [
-          "Natural lighting reveals healthy skin tone",
-          "Relaxed facial expression suggests good stress management",
-          "Clear eyes indicate adequate hydration levels"
-        ],
-        root_causes: ["lifestyle balance", "hydration habits", "sleep quality"],
-        improvement_timeline: "With consistent daily wellness rituals, you can expect to see improvements in energy and radiance within 2-3 weeks, with more significant transformation over 30 days."
-      },
-      facial_features: {
-        skin_analysis: {
-          observation: "Skin appears to have natural healthy tone with room for enhanced hydration",
-          potential_causes: ["environmental factors", "hydration levels", "sleep quality"],
-          root_connection: "Skin health reflects internal hydration and stress management",
-          protocol: "Morning hydration ritual + evening skincare routine with gentle, natural products",
-          timeline: "2-3 weeks for improved texture, 4-6 weeks for enhanced radiance"
-        },
-        eye_area: {
-          observation: "Eye area shows natural alertness with potential for enhanced brightness",
-          potential_causes: ["screen time", "sleep patterns", "hydration"],
-          root_connection: "Eye brightness reflects sleep quality and digital wellness habits",
-          protocol: "Blue light management + eye relaxation exercises + adequate sleep schedule",
-          timeline: "1-2 weeks for reduced strain, 3-4 weeks for enhanced brightness"
-        },
-        lip_analysis: {
-          observation: "Natural lip tone with opportunity for enhanced hydration",
-          potential_causes: ["environmental exposure", "hydration habits"],
-          root_connection: "Lip health indicates overall hydration and nutrient absorption",
-          protocol: "Consistent hydration + natural lip care + omega-3 rich foods",
-          timeline: "1 week for improved texture, 2-3 weeks for enhanced natural color"
-        },
-        jaw_tension: {
-          observation: "Facial muscles appear relaxed with room for stress optimization",
-          potential_causes: ["daily stress", "jaw clenching", "tension habits"],
-          root_connection: "Jaw tension reflects stress levels and mindfulness practices",
-          protocol: "Daily jaw relaxation exercises + mindfulness practices + stress management",
-          timeline: "1-2 weeks for tension relief, 3-4 weeks for lasting relaxation"
-        }
-      }
-    },
-    daily_rituals: [
-      {
-        category: "Morning Hydration",
-        rituals: [
-          {
-            title: "Warm Lemon Water",
-            description: "Start your day with warm water and fresh lemon to support hydration and digestion"
-          },
-          {
-            title: "Gentle Face Massage",
-            description: "5-minute lymphatic drainage massage to promote circulation and natural glow"
-          }
-        ]
-      },
-      {
-        category: "Evening Wind-Down",
-        rituals: [
-          {
-            title: "Digital Sunset",
-            description: "Reduce screen exposure 1 hour before bed for better sleep quality"
-          },
-          {
-            title: "Gratitude Practice",
-            description: "Write down 3 things you're grateful for to reduce stress and promote positive mindset"
-          }
-        ]
-      }
-    ],
-    product_recommendations: [
-      {
-        name: "Magnesium Glycinate",
-        dosage: "200-400mg before bed",
-        reason: "Supports muscle relaxation and deeper sleep quality",
-        expected_result: "Improved sleep depth and morning energy levels",
-        price_band: "$15-25",
-        timeline: "1-2 weeks for noticeable sleep improvement"
-      },
-      {
-        name: "Vitamin C Serum",
-        dosage: "Apply morning after cleansing",
-        reason: "Supports natural collagen production and skin brightness",
-        expected_result: "Enhanced skin radiance and protection from environmental stress",
-        price_band: "$20-40",
-        timeline: "2-4 weeks for visible skin improvements"
-      },
-      {
-        name: "Omega-3 Supplement",
-        dosage: "1000mg daily with meals",
-        reason: "Supports skin hydration and reduces inflammation",
-        expected_result: "Improved skin texture and natural moisture retention",
-        price_band: "$25-35",
-        timeline: "3-6 weeks for optimal skin benefits"
-      }
-    ]
-  };
-
-  // If we have face detection data, we can customize insights based on detected features
-  if (faceAnnotations && faceAnnotations.length > 0) {
-    const face = faceAnnotations[0];
-    
-    // Adjust perceived age based on face detection confidence
-    if (face.detectionConfidence > 0.8) {
-      defaultInsights.confidence = Math.min(0.9, face.detectionConfidence);
-    }
-
-    // Customize insights based on detected emotions or features
-    if (face.joyLikelihood === 'VERY_LIKELY' || face.joyLikelihood === 'LIKELY') {
-      defaultInsights.preview_insights[0].emotional_hook = "Your positive energy shines through - let's amplify that natural radiance with targeted wellness practices.";
-    }
-
-    if (face.sorrowLikelihood === 'LIKELY' || face.sorrowLikelihood === 'VERY_LIKELY') {
-      defaultInsights.preview_insights[2].emotional_hook = "Stress can impact our natural glow - discover gentle practices to restore your inner balance.";
-    }
+// Generate wellness insights using GPT based on Google Vision API results
+async function generateWellnessInsights(faceAnnotations: any[], imageBase64: string): Promise<any> {
+  const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
+  
+  if (!openaiApiKey) {
+    throw new Error('OpenAI API key not configured');
   }
 
-  return defaultInsights;
+  // Prepare face detection data for the prompt
+  let faceData = "No face detected in the image.";
+  
+  if (faceAnnotations && faceAnnotations.length > 0) {
+    const face = faceAnnotations[0];
+    faceData = `Face detected with the following characteristics:
+- Detection confidence: ${(face.detectionConfidence * 100).toFixed(1)}%
+- Joy likelihood: ${face.joyLikelihood || 'UNKNOWN'}
+- Sorrow likelihood: ${face.sorrowLikelihood || 'UNKNOWN'}
+- Anger likelihood: ${face.angerLikelihood || 'UNKNOWN'}
+- Surprise likelihood: ${face.surpriseLikelihood || 'UNKNOWN'}
+- Under-exposed likelihood: ${face.underExposedLikelihood || 'UNKNOWN'}
+- Blurred likelihood: ${face.blurredLikelihood || 'UNKNOWN'}
+- Headwear likelihood: ${face.headwearLikelihood || 'UNKNOWN'}`;
+  }
+
+  const prompt = `Analyze this face like a pro: As a physiognomist, nutritionist, psychosomatic expert, and women's health specialist. 
+
+Face detection data: ${faceData}
+
+Answer the following questions:
+1. How old do I look visually?
+2. What deficiencies can be detected based on facial expressions, skin tone, eyes, jawline, lips, and cheeks?
+3. Are there visible signs of possible food intolerances or reactions?
+4. What should I pay attention to in terms of women's health?
+5. What psycho-emotional states might have affected my current appearance?
+6. What internal conflicts and personality traits are reflected in my face?
+7. What would you recommend I change in my diet, lifestyle, rest habits, mindset, and thinking patterns?
+
+Please provide a comprehensive analysis in the following JSON format:
+{
+  "perceived_age": number,
+  "confidence": number (0-1),
+  "visual_age_analysis": "detailed explanation of perceived age",
+  "deficiencies": {
+    "skin_tone": "observations about skin tone and potential deficiencies",
+    "eyes": "observations about eyes and what they reveal",
+    "jawline": "observations about jawline and tension",
+    "lips": "observations about lips and hydration/nutrition",
+    "cheeks": "observations about cheeks and overall health",
+    "nutrient_flags": ["list of potential nutrient deficiencies"]
+  },
+  "food_intolerances": {
+    "signs_present": boolean,
+    "potential_triggers": ["list of potential food triggers"],
+    "recommendations": "testing and elimination recommendations"
+  },
+  "womens_health": {
+    "hormonal_indicators": "observations about potential hormonal patterns",
+    "recommendations": "specific women's health recommendations"
+  },
+  "psycho_emotional_states": {
+    "observed_states": ["list of observed emotional/psychological states"],
+    "stress_indicators": "signs of stress or emotional patterns",
+    "energy_levels": "assessment of energy and vitality"
+  },
+  "internal_conflicts": {
+    "personality_traits": ["observed personality traits"],
+    "potential_conflicts": ["internal conflicts or tensions"],
+    "behavioral_patterns": "patterns reflected in facial expression"
+  },
+  "recommendations": {
+    "diet": {
+      "eliminate": ["foods to eliminate or test"],
+      "add": ["foods to add"],
+      "supplements": ["recommended supplements with dosages"]
+    },
+    "lifestyle": {
+      "daily_habits": ["specific daily habit recommendations"],
+      "exercise": "exercise recommendations",
+      "stress_management": ["stress management techniques"]
+    },
+    "rest": {
+      "sleep_hygiene": ["sleep improvement recommendations"],
+      "recovery": ["recovery and restoration practices"]
+    },
+    "mindset": {
+      "mental_practices": ["mindset and mental health practices"],
+      "emotional_work": ["emotional processing recommendations"],
+      "thinking_patterns": ["cognitive pattern adjustments"]
+    }
+  },
+  "preview_insights": [
+    {
+      "star_rating": number (1-5),
+      "emotional_hook": "compelling insight about their wellness",
+      "conversion_tease": "what they'll discover in the full plan",
+      "category": "category name"
+    }
+  ],
+  "daily_rituals": [
+    {
+      "category": "category name",
+      "rituals": [
+        {
+          "title": "ritual name",
+          "description": "detailed description"
+        }
+      ]
+    }
+  ],
+  "product_recommendations": [
+    {
+      "name": "product name",
+      "dosage": "how to use",
+      "reason": "why recommended for this person",
+      "expected_result": "what to expect",
+      "price_band": "price range",
+      "timeline": "when to expect results"
+    }
+  ]
+}
+
+Be specific, detailed, and personalized in your analysis. Draw from the facial detection data and provide actionable insights.`;
+
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openaiApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: prompt
+              },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: `data:image/jpeg;base64,${imageBase64}`,
+                  detail: 'high'
+                }
+              }
+            ]
+          }
+        ],
+        max_tokens: 4000,
+        temperature: 0.7
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+    }
+
+    const data = await response.json();
+    const analysisText = data.choices[0]?.message?.content;
+
+    if (!analysisText) {
+      throw new Error('No analysis content received from OpenAI');
+    }
+
+    // Parse the JSON response from GPT
+    let analysisData;
+    try {
+      // Extract JSON from the response (in case GPT adds extra text)
+      const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        analysisData = JSON.parse(jsonMatch[0]);
+      } else {
+        throw new Error('No valid JSON found in GPT response');
+      }
+    } catch (parseError) {
+      console.error('Failed to parse GPT response as JSON:', parseError);
+      console.error('Raw GPT response:', analysisText);
+      throw new Error('Failed to parse analysis results');
+    }
+
+    return analysisData;
+  } catch (error) {
+    console.error('Error calling OpenAI API:', error);
+    throw error;
+  }
 }
 
 Deno.serve(async (req) => {
@@ -172,7 +215,17 @@ Deno.serve(async (req) => {
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
-    console.log('Google Vision API key found');
+
+    // Check for OpenAI API key
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openaiApiKey) {
+      console.error('OPENAI_API_KEY environment variable is not set');
+      return new Response(
+        JSON.stringify({ error: 'OpenAI API key not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    console.log('Both API keys found');
 
     // Handle CORS preflight requests
     if (req.method === 'OPTIONS') {
@@ -217,7 +270,6 @@ Deno.serve(async (req) => {
 
     // Call Google Vision API for face detection
     console.log('Making request to Google Vision API...');
-    console.log('Using API key from environment variable');
     
     const visionResponse = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${googleApiKey}`, {
       method: 'POST',
@@ -246,16 +298,12 @@ Deno.serve(async (req) => {
     });
 
     console.log('Google Vision API response status:', visionResponse.status);
-    console.log('Google Vision API response ok:', visionResponse.ok);
 
     if (!visionResponse.ok) {
       const errorText = await visionResponse.text();
-      console.error('Google Vision API error status:', visionResponse.status);
-      console.error('Google Vision API error response:', errorText);
+      console.error('Google Vision API error:', errorText);
       
-      // If it's a 401/403 from Google, it's likely an API key issue
       if (visionResponse.status === 401 || visionResponse.status === 403) {
-        console.error('Google Vision API authentication failed - check API key');
         return new Response(
           JSON.stringify({ 
             error: 'Google Vision API authentication failed',
@@ -274,17 +322,14 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log('Google Vision API call successful, parsing response...');
     const visionData = await visionResponse.json();
-    console.log('Vision response data keys:', Object.keys(visionData));
-    
     const faceAnnotations = visionData.responses?.[0]?.faceAnnotations;
     console.log('Face annotations found:', !!faceAnnotations);
-    console.log('Number of faces detected:', faceAnnotations ? faceAnnotations.length : 0);
 
-    // Generate wellness insights based on face detection results
-    const analysisData = generateWellnessInsights(faceAnnotations);
-    console.log('Generated wellness insights');
+    // Generate wellness insights using GPT
+    console.log('Generating wellness insights with GPT...');
+    const analysisData = await generateWellnessInsights(faceAnnotations, base64Image);
+    console.log('GPT analysis completed');
 
     // Calculate expiration time (60 minutes from now)
     const expiresAt = new Date();
@@ -312,7 +357,7 @@ Deno.serve(async (req) => {
     console.error('Error stack:', error.stack);
     console.error('=== END ERROR ===');
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
+      JSON.stringify({ error: 'Internal server error', details: error.message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

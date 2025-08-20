@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 
-interface PreviewInsight {
+export interface PreviewInsight {
   star_rating: number;
   emotional_hook: string;
   conversion_tease: string;
   category: string;
 }
 
-interface AnalysisResult {
+export interface AnalysisResult {
   temp_analysis_id: string;
   perceived_age: number;
   preview_insights: PreviewInsight[];
@@ -17,12 +17,66 @@ interface AnalysisResult {
   image_data: string;
 }
 
-interface FullReport {
+export interface FullReport {
   analysis_id: string;
   image_url: string;
   analysis_data: any;
   created_at: string;
   expires_at: string;
+}
+
+export interface DetailedAnalysis {
+  perceived_age: number;
+  confidence: number;
+  visual_age_analysis: string;
+  deficiencies: {
+    skin_tone: string;
+    eyes: string;
+    jawline: string;
+    lips: string;
+    cheeks: string;
+    nutrient_flags: string[];
+  };
+  food_intolerances: {
+    signs_present: boolean;
+    potential_triggers: string[];
+    recommendations: string;
+  };
+  womens_health: {
+    hormonal_indicators: string;
+    recommendations: string;
+  };
+  psycho_emotional_states: {
+    observed_states: string[];
+    stress_indicators: string;
+    energy_levels: string;
+  };
+  internal_conflicts: {
+    personality_traits: string[];
+    potential_conflicts: string[];
+    behavioral_patterns: string;
+  };
+  recommendations: {
+    diet: {
+      eliminate: string[];
+      add: string[];
+      supplements: string[];
+    };
+    lifestyle: {
+      daily_habits: string[];
+      exercise: string;
+      stress_management: string[];
+    };
+    rest: {
+      sleep_hygiene: string[];
+      recovery: string[];
+    };
+    mindset: {
+      mental_practices: string[];
+      emotional_work: string[];
+      thinking_patterns: string[];
+    };
+  };
 }
 
 const TEMP_ANALYSIS_KEY = 'glowguide_temp_analysis';

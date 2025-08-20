@@ -8,76 +8,11 @@ import { SubscriptionStatus } from './components/SubscriptionStatus';
 import { CheckoutButton } from './components/CheckoutButton';
 import { SuccessPage } from './components/SuccessPage';
 import { PhotoUpload } from './components/PhotoUpload';
+import { DetailedAnalysis } from './hooks/useAnalysis';
 import { STRIPE_PRODUCTS } from './stripe-config';
 
 type AppState = 'landing' | 'upload' | 'preview' | 'payment' | 'post-payment-auth' | 'plan' | 'progress';
 type AuthMode = 'login' | 'signup';
-
-interface PreviewInsight {
-  perceived_age?: number;
-  star_rating: number;
-  emotional_hook: string;
-  conversion_tease: string;
-  icon: React.ReactNode;
-}
-
-interface DetailedAnalysis {
-  wellness_age: {
-    perceived_age: number;
-    confidence: number;
-    detailed_observations: string[];
-    root_causes: string[];
-    improvement_timeline: string;
-  };
-  facial_features: {
-    skin_analysis: {
-      observation: string;
-      potential_causes: string[];
-      root_connection: string;
-      protocol: string;
-      timeline: string;
-    };
-    eye_area: {
-      observation: string;
-      potential_causes: string[];
-      root_connection: string;
-      protocol: string;
-      timeline: string;
-    };
-    lip_analysis: {
-      observation: string;
-      potential_causes: string[];
-      root_connection: string;
-      protocol: string;
-      timeline: string;
-    };
-    jaw_tension: {
-      observation: string;
-      potential_causes: string[];
-      root_connection: string;
-      protocol: string;
-      timeline: string;
-    };
-  };
-}
-
-interface DailyRitual {
-  category: string;
-  rituals: {
-    title: string;
-    description: string;
-    icon: React.ReactNode;
-  }[];
-}
-
-interface ProductRecommendation {
-  name: string;
-  dosage: string;
-  reason: string;
-  expected_result: string;
-  price_band: string;
-  timeline: string;
-}
 
 function App() {
   const { user, loading: authLoading, signOut } = useAuth();
