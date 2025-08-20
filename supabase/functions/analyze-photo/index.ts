@@ -1,6 +1,6 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
-const googleApiKey = 'AIzaSyB5O-KiDzFSeZP9jvpemQZUhRwla9lagLQ';
+const googleApiKey = Deno.env.get('GOOGLE_VISION_API_KEY') || 'AIzaSyB5O-KiDzFSeZP9jvpemQZUhRwla9lagLQ';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -208,6 +208,7 @@ Deno.serve(async (req) => {
 
     // Call Google Vision API for face detection
     console.log('Making request to Google Vision API...');
+    console.log('Using API key:', googleApiKey ? 'API key present' : 'No API key');
     
     const visionResponse = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${googleApiKey}`, {
       method: 'POST',
@@ -242,6 +243,18 @@ Deno.serve(async (req) => {
       const errorText = await visionResponse.text();
       console.error('Google Vision API error status:', visionResponse.status);
       console.error('Google Vision API error response:', errorText);
+      
+      // If it's a 401/403 from Google, it's likely an API key issue
+      if (visionResponse.status === 401 || visionResponse.status === 403) {
+        console.error('Google Vision API authentication failed - check API key');
+        return new Response(
+          JSON.stringify({ 
+            error: 'Google Vision API authentication failed',
+            details: 'Please check the Google Vision API key configuration'
+          }),
+          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
       
       return new Response(
         JSON.stringify({ 
