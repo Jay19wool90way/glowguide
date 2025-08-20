@@ -87,12 +87,6 @@ export function useAnalysis() {
         throw new Error('Authentication required');
       }
 
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        throw new Error('Authentication required');
-      }
-
       // Get temp analysis data from sessionStorage
       const tempAnalysis = getTempAnalysis();
       if (!tempAnalysis) {
@@ -139,12 +133,6 @@ export function useAnalysis() {
     setError(null);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        throw new Error('Authentication required');
-      }
-
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
