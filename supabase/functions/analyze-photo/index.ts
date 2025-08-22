@@ -1,7 +1,7 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://glowguide-personal-b-ump1.bolt.host',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
@@ -230,7 +230,10 @@ Deno.serve(async (req) => {
     // Handle CORS preflight requests
     if (req.method === 'OPTIONS') {
       console.log('Handling CORS preflight request');
-      return new Response(null, { status: 204, headers: corsHeaders });
+      console.log('CORS preflight request received');
+      console.log('Request headers:', Object.fromEntries(req.headers.entries()));
+      console.log('Response headers being sent:', corsHeaders);
+      return new Response('ok', { headers: corsHeaders });
     }
 
     if (req.method !== 'POST') {
