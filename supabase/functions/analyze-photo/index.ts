@@ -233,7 +233,7 @@ Deno.serve(async (req) => {
       console.log('CORS preflight request received');
       console.log('Request headers:', Object.fromEntries(req.headers.entries()));
       console.log('Response headers being sent:', corsHeaders);
-      return new Response('ok', { headers: corsHeaders });
+      return new Response('ok', { status: 200, headers: corsHeaders });
     }
 
     if (req.method !== 'POST') {
