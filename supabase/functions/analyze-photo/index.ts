@@ -274,37 +274,51 @@ Deno.serve(async (req) => {
     // Call Google Vision API for face detection
     console.log('Making request to Google Vision API...');
     
-    const visionResponse = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${googleApiKey}`, {
+    const visionApiUrl = `https://vision.googleapis.com/v1/images:annotate?key=${googleApiKey}`;
+    console.log('Google Vision API URL:', visionApiUrl);
+    
+    const visionRequestBody = {
+      requests: [
+        {
+          image: {
+            content: base64Image
+          },
+          features: [
+            {
+              type: 'FACE_DETECTION',
+              maxResults: 1
+            },
+            {
+              type: 'SAFE_SEARCH_DETECTION',
+              maxResults: 1
+            }
+          ]
+        }
+      ]
+    };
+    
+    console.log('Google Vision API request body:', JSON.stringify(visionRequestBody, null, 2));
+    
+    const visionResponse = await fetch(visionApiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        requests: [
-          {
-            image: {
-              content: base64Image
-            },
-            features: [
-              {
-                type: 'FACE_DETECTION',
-                maxResults: 1
-              },
-              {
-                type: 'SAFE_SEARCH_DETECTION',
-                maxResults: 1
-              }
-            ]
-          }
-        ]
-      })
+      body: JSON.stringify(visionRequestBody)
     });
 
     console.log('Google Vision API response status:', visionResponse.status);
+    console.log('Google Vision API response headers:', Object.fromEntries(visionResponse.headers.entries()));
 
     if (!visionResponse.ok) {
       const errorText = await visionResponse.text();
       console.error('Google Vision API error:', errorText);
+      console.error('Full Google Vision API error response:', {
+        status: visionResponse.status,
+        statusText: visionResponse.statusText,
+        headers: Object.fromEntries(visionResponse.headers.entries()),
+        body: errorText
+      });
       
       if (visionResponse.status === 401 || visionResponse.status === 403) {
         return new Response(
@@ -326,6 +340,7 @@ Deno.serve(async (req) => {
     }
 
     const visionData = await visionResponse.json();
+    console.log('Google Vision API successful response:', JSON.stringify(visionData, null, 2));
     const faceAnnotations = visionData.responses?.[0]?.faceAnnotations;
     console.log('Face annotations found:', !!faceAnnotations);
 
