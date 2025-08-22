@@ -90,8 +90,16 @@ export function useAnalysis() {
     setLoading(true);
     setError(null);
 
+    // Validate environment variables
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    if (!supabaseUrl) {
+      setError('Supabase URL not configured. Please check your environment variables.');
+      setLoading(false);
+      return null;
+    }
+
     try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-photo`, {
+      const response = await fetch(`${supabaseUrl}/functions/v1/analyze-photo`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
